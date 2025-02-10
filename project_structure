@@ -1,0 +1,11 @@
+plotting_project/
+├── .gitignore
+├── README.md
+├── config/
+│   └── plot_defaults.ini
+├── src/
+│   ├── __init__.py
+│   ├── plot_manager.py
+│   └── config_parser.py
+└── examples/
+    └── demo.py 
