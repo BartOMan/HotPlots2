@@ -1,7 +1,8 @@
 import os
+import matplotlib
+from matplotlib import pyplot as plt
 import pytest
 import tempfile
-import matplotlib
 matplotlib.use('Agg')  # Use non-interactive backend for testing
 
 @pytest.fixture
