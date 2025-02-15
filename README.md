@@ -6,6 +6,7 @@ A professional plotting manager that provides a clean, object-oriented interface
 
 - Easy creation and management of multi-subplot figures
 - Configurable styling through external configuration files
+- Automatic backend detection and compatibility with both Qt5 and TkAgg
 - Support for various plot types:
   - Regular plots
   - Semi-log plots (x and y)
