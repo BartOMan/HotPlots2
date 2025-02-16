@@ -1,0 +1,33 @@
+conda info
+conda info --envs
+
+=================================================================
+Remind me how to run the tests at the command line again?
+    pytest
+=================================================================
+Remind me how to run the tests at the command line again?
+
+To run the tests from the command line, you can use Python's built-in unittest framework. 
+From the root directory of your project, run:
+    python -m unittest discover tests
+    
+    # Using unittest (built-in)
+    python -m unittest discover tests
+
+    # Using pytest (needs to be installed)
+    pytest
+    
+    # or for more verbose output
+    pytest -v
+    
+    
+Or if you want to run a specific test file:
+    python -m unittest tests/test_plot_manager.py
+    
+For more verbose output, add the -v flag:
+    python -m unittest discover tests -v
+
+
+This will show you each individual test that passes or fails, rather than just a summary.
+
+=================================================================

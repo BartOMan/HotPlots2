@@ -1,0 +1,42 @@
+Create a Python project, with setup for my online github.com account, complete with a .gitignore and a README.md file.  All source code should go in a "src" subdir.   
+
+Create a Python class designed for making professional looking Python plots using matplotlib.  This class should offer a simplified plotting interface without forcing the user to deal with all the specifics of matplotlib and the different interface classes (pylab vs pyplot).  
+
+The class should support plotting and plot related commands for both "TkAgg" and "Qt5Agg" graphical backends (error for other backends, for now).  The method calls should be able to query the proper backend and apply the appropriate method calls without the user knowing anything about backend-specific commands.   
+
+Configuration is a key part of this class.  Settings that control plot background colors, line colors, line styles, linewidths, fonts, font sizes and any other primary controls should be implemented through a configuration file.   JSON would work, but I'd prefer something that's more easily human-readable so it can be edited & changed manually. 
+
+One possible non-json approach:
+text.xlabels.font = 'arial'
+text.xlabels.fontsize = 12
+text.title.fontsize = 15
+lines.linestyle = '-'
+lines.colorSequence = <array of RGB colors>
+lines.linestyleSequence = [ '-', '--', ':' ]
+axes.backgroundcolor = [R G B];  # numeric values
+etc.
+
+You don't have to implement every possible setting.  But I would like to be able to control the most popular stylization settings with this .ini config file.
+
+The class should be persistent in memory so that one does not have to return copies of itself every time it's modified-- it's lifetime should last until it goes out of scope everywhere. 
+
+The constructor should take (rows,cols) args at a minimum, to specify the subplots.  The class should be aware of what's been done, having a sense of state, so it should be able to query whether the figure window has been closed.  It should retain a sense of an "active subplot", which is the subplot where all .plot() and .zoom commands will be applied.  One should be able to query and set the active subplot by referring to the subplot by (row,col) number.  
+
+Among the critical methods I'd like include:
+.plot(x,y) with kw args for legend='str' and kw arg support to override line color, line width, and line style.  Use the same kw args that axes.plot() method uses for line color/width/style, to override defaults in the .ini file.
+This class should also support .semilogx(x,y), .semilogy(x,y) and .loglog(x,y) methods, with args simlilar to those of .plot(x,y).  
+
+There should also be methods for axes titles for each subplot.  But there should be methods for an overall title for the entire chart, even if that is managed as a separate annotation.  
+
+This class will manage one figure window per class instance.
+No instance will have more than one figure window.  
+ 
+There should be a rich set of .zoom methods such as .zoomY(ymin,ymax) method to set the ylim axes settings.   A .zoomX(xmin,xmax) to set the xlim settings, which (by default) auto-zooms to the ymin/ymax values of all lines visible in that subplot.
+
+There should be methods to support querying/adjusting the current figure size (displayed size) as well as the printed figure size, which controls the size of the image that dumps to file.  As I understand it, the displayed figure size and the printed image size are independent.   There should be method like .savePlot or .saveFig(filename) to save the figure window to a file.  A kw arg filetypes = ['svg', 'jpg', 'png'] should be supported.  A kw dpi=300 should be used with 300 as the default. 
+
+Importantly, I want to be able to modify/tweak the plot manually through method calls (or possibly through figure/axes method calls) after the plot has been displayed.   
+
+The class should store the figure & axes inside the class as public properties-- I don't want to pass figures/axes around unnecessarily.  
+
+Any numerics array args & return values should be handled with Numpy arrays instead of lists.  
