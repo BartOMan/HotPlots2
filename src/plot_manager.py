@@ -1,10 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT
 # from matplotlib.backends.backend_qt5agg import FigureCanvasQT5Agg
 import configparser
 import os
+import platform
 
 class PlotManager:
     """A professional plotting manager class that simplifies matplotlib usage."""
@@ -30,6 +32,20 @@ class PlotManager:
         self.figure = plt.figure()
         self.axes = np.array([[plt.subplot(rows, cols, i * cols + j + 1) 
                              for j in range(cols)] for i in range(rows)])
+        
+        """
+        # Add navigation toolbar based on backend
+        canvas = self.figure.canvas
+        if plt.get_backend() == 'TkAgg':
+            self.toolbar = NavigationToolbar2Tk(canvas, canvas.get_tk_widget().master)
+        elif plt.get_backend() in ['QtAgg', 'Qt5Agg', 'Qt6Agg']:
+            from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT
+            parent = canvas.parent()
+            self.toolbar = NavigationToolbar2QT(canvas, parent)
+        """
+
+        plt.show(block=False)  # Show the window immediately, non-blocking
+        
         self.rows = rows
         self.cols = cols
         
@@ -51,10 +67,28 @@ class PlotManager:
     def _check_backend(self):
         """Verify that we're using a supported backend."""
         backend = plt.get_backend()
-        supported_backends = ['TkAgg', 'Qt5Agg', 'Qt6Agg']  # Add more as needed
+        supported_backends = ['TkAgg', 'QtAgg', 'Qt5Agg', 'Qt6Agg']  # Add more as needed
         if backend not in supported_backends:
             raise ValueError(f"Unsupported backend: {backend}. Please use one of: {supported_backends}")
     
+    def check_all_backends_available(self):
+        """Check if specific backends are available."""
+        
+        # Get the current backend
+        curBackend = plt.get_backend()
+        print("Currently installed backend:", curBackend)
+
+        # Test if specific backends are available
+        for backend in ['TkAgg', 'Qt5Agg', 'QtAgg']:
+            try:
+                plt.switch_backend(backend)
+                print(f"Backend {backend} is available")
+            except ImportError:
+                print(f"Backend {backend} is not available")
+
+        # Restore the original backend
+        plt.switch_backend(curBackend)
+
     def _load_config(self, config_file):
         """Load configuration from file."""
         if config_file is None:
@@ -234,7 +268,7 @@ class PlotManager:
         self.figure.suptitle(title, fontname=font, fontsize=fontsize)
         self.figure.canvas.draw()
     
-    def save_figure(self, filename, filetypes=None, dpi=300):
+    def save_figure(self, filename, filetypes=None, dpi=300, preview=False):
         """Save the figure to a file.
         
         Args:
@@ -242,6 +276,8 @@ class PlotManager:
             filetypes (list, optional): List of allowed file extensions. If None, 
                 matplotlib's default formats are used
             dpi (int, optional): Resolution in dots per inch. Defaults to 300
+            preview (bool, optional): If True, opens the saved file with system's
+                default viewer. Defaults to False
         
         Raises:
             RuntimeError: If attempting to save after the figure window has been closed
@@ -257,6 +293,14 @@ class PlotManager:
         
         if hasattr(self, '_output_size'):
             self.figure.set_size_inches(*orig_size)
+            
+        if preview:
+            if platform.system() == 'Windows':
+                os.system(f'explorer.exe {filename}')
+            elif platform.system() == 'Darwin':  # macOS
+                os.system(f'open {filename}')
+            else:  # Linux
+                os.system(f'xdg-open {filename}')
     
     def _on_close(self, event):
         """Handle window close event."""
@@ -285,6 +329,33 @@ class PlotManager:
         if not 1 <= lineNum <= self.getNumLines():
             raise ValueError(f"Line number must be between 1 and {self.getNumLines()}")
         return self._lines[self._active_row][self._active_col][lineNum - 1]
+
+    def link_axes(self, axis='xy'):
+        """Link axes across all subplots so they zoom together.
+        
+        Args:
+            axis (str): Which axes to link. Options are:
+                'x': Link only x-axes
+                'y': Link only y-axes
+                'xy' or 'both': Link both x and y axes
+        """
+        if axis not in ['x', 'y', 'xy', 'both']:
+            raise ValueError("axis must be 'x', 'y', 'xy', or 'both'")
+        
+        # Convert all axes to flat list
+        all_axes = self.axes.flatten()
+        
+        if axis in ['x', 'xy', 'both']:
+            # Link x axes
+            for ax in all_axes[1:]:
+                ax.sharex(all_axes[0])
+        
+        if axis in ['y', 'xy', 'both']:
+            # Link y axes
+            for ax in all_axes[1:]:
+                ax.sharey(all_axes[0])
+        
+        self.figure.canvas.draw()
 
 # Add more padding between title and plot
 # plot_manager.set_subplot_title('First line\\n\\nSecond line')  # double spacing
