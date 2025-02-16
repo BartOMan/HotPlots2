@@ -10,6 +10,7 @@ setup(
     ],
     extras_require={
         'test': [
+            'PySide2',
             'pytest',
             'pytest-cov',
         ],

@@ -11,7 +11,7 @@ This project uses pytest for testing. The tests are designed to run both locally
 
 2. Run the tests:
    ```bash
-   pytest
+   pytest -v         # -v verbose mode is optional
    ```
 
    This will:
@@ -66,6 +66,7 @@ When adding new features:
 
 1. **Missing Dependencies**
    ```bash
+   pip install -r requirements.txt
    pip install -e ".[test]"
    ```
 

@@ -3,7 +3,8 @@ import matplotlib
 from matplotlib import pyplot as plt
 import pytest
 import tempfile
-matplotlib.use('Agg')  # Use non-interactive backend for testing
+# matplotlib.use('Agg')  # Use non-interactive backend for testing
+matplotlib.use('TkAgg') 
 
 @pytest.fixture
 def config_file():

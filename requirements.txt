@@ -1,0 +1,7 @@
+numpy
+matplotlib
+PySide2         # Optional: for Qt interface 
+
+pytest          # Optional: for testing, but it uses the more standard "pytest" package
+pytest-cov      # Optional: for coverage testing
+

@@ -78,7 +78,7 @@ plot_manager.save_figure('trig_functions.png', dpi=300)
 Clone this repository and ensure you have the required dependencies:
 
 ```bash
-pip install numpy matplotlib
+pip install -r requirements.txt
 ```
 
 ## License
@@ -107,4 +107,4 @@ SOFTWARE.
 
 ## Contributing
 
-[Your Contributing Guidelines Here]
+[N/A]
