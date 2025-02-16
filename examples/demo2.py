@@ -1,12 +1,22 @@
 import sys
 from pathlib import Path
-import numpy as np
+import platform
+import os
 
 parentDir = str(Path(__file__).parent.parent)
+configDir = str(Path(parentDir) / 'config')
 
 # Add parent directory to Python path
 sys.path.append(parentDir)
+
+import numpy as np
+import matplotlib
+matplotlib.use('TkAgg')  # or 'Qt5Agg' if you prefer Qt
+import matplotlib.pyplot as plt
 from src.plot_manager import PlotManager
+
+# Define output filename
+output_filename = 'demo_plot.jpg'
 
 # Create some sample data
 x = np.linspace(0, 10, 100)
@@ -15,8 +25,17 @@ y2 = np.cos(x)
 y3 = np.exp(-x/5) * np.sin(x)
 y4 = x**2 / 50
 
-# Create plot manager with 2x2 subplots
-pm = PlotManager(2, 2)
+# Define config file path and verify it exists
+confFile = 'plot_defaults.ini'
+# confFile = 'plotConfigTesting.ini'
+# confFile = '../config/plotConfigTesting.ini'
+fullConfFile = Path(configDir) / confFile
+
+if not fullConfFile.exists():
+    raise FileNotFoundError(f"Configuration file not found: {fullConfFile}")
+
+# Now use the verified config file path
+pm = PlotManager(2, 2, str(fullConfFile))
 
 # Plot in first subplot
 pm.set_active_subplot(0, 0)
@@ -34,6 +53,9 @@ pm.set_active_subplot(1, 0)
 pm.plot(x, y3, legend='Damped Sine', color='purple')
 pm.set_subplot_title('Damped Sine Wave')
 
+# Link just x axes, y axes or both axes
+pm.link_axes('x')       # valid arguments are 'x', 'y', 'xy'    
+
 # Set overall figure title
 pm.set_figure_title('Demo Plot')
 
@@ -41,7 +63,8 @@ pm.set_figure_title('Demo Plot')
 pm.set_figure_size(12, 8)
 
 # Save the figure
-pm.save_figure('demo_plot.png', dpi=300)
+pm.save_figure(output_filename, dpi=300, preview=False)
+
 
 # Keep the plot window open
 input("Press Enter to close...") 
